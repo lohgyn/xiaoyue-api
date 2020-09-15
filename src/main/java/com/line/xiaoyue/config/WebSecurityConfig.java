@@ -54,7 +54,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             logout.logoutUrl(appConfig.getOauth2Uri() + "/logout")
                     .logoutSuccessUrl(appConfig.getOauth2Uri() + "/logout/success").clearAuthentication(true)
                     .invalidateHttpSession(true).deleteCookies("JSESSIONID").permitAll();
-        }).cors();
+        }).cors().and().csrf().ignoringAntMatchers(appConfig.getOauth2Uri() + "/logout");
     }
 
     @Bean
