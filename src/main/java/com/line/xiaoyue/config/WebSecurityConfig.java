@@ -38,7 +38,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         this.additionalParameters.put("bot_prompt", "normal");
 
         http.authorizeRequests(a -> {
-            a.antMatchers("/**").permitAll().antMatchers("/api/**").authenticated();
+           a.antMatchers("/api/v1/public/**").permitAll().antMatchers("/api/**").authenticated().anyRequest().permitAll();
         }).exceptionHandling(e -> {
             e.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
         }).oauth2Login(oauth2 -> {

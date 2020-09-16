@@ -9,6 +9,8 @@ public class AppConfig {
 
     private String frontEndUri;
     private String oauth2Uri;
+    private String messagingApiAccessToken;
+
     public String getFrontEndUri() {
         return frontEndUri;
     }
@@ -24,5 +26,13 @@ public class AppConfig {
     public void setOauth2Uri(final String oauth2Uri) {
         this.oauth2Uri = oauth2Uri;
     }
-    
+
+    public String getMessagingApiAccessToken() {
+        return messagingApiAccessToken;
+    }
+
+    public void setMessagingApiAccessToken(String messagingApiAccessToken) {
+        this.messagingApiAccessToken = messagingApiAccessToken;
+    }
+
 }
