@@ -7,11 +7,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class User implements Serializable {
 
     /**
-	 *
-	 */
-	private static final long serialVersionUID = 421574679290753025L;
+     *
+     */
+    private static final long serialVersionUID = 421574679290753025L;
 
-	@JsonProperty("userId")
+    @JsonProperty("userId")
     private String id;
 
     @JsonProperty("displayName")
@@ -22,6 +22,9 @@ public class User implements Serializable {
 
     @JsonProperty("statusMessage")
     private String statusMessage;
+
+    @JsonProperty(value = "friend", required = false)
+    private boolean friend;
 
     public String getId() {
         return id;
@@ -53,6 +56,14 @@ public class User implements Serializable {
 
     public void setStatusMessage(String statusMessage) {
         this.statusMessage = statusMessage;
+    }
+
+    public boolean isFriend() {
+        return friend;
+    }
+
+    public void setFriend(boolean friend) {
+        this.friend = friend;
     }
 
 }
