@@ -6,9 +6,12 @@ import java.util.Map;
 
 import com.line.xiaoyue.config.resolver.CustomAuthorizationRequestResolver;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -24,6 +27,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private final static Logger LOGGER = LoggerFactory.getLogger(WebSecurityConfig.class);
+    @Autowired
+    Environment environment;
+
     @Autowired
     private ClientRegistrationRepository clientRegistrationRepository;
 
@@ -38,7 +45,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         this.additionalParameters.put("bot_prompt", "normal");
 
         http.authorizeRequests(a -> {
-           a.antMatchers("/api/v1/public/**").permitAll().antMatchers("/api/**").authenticated().anyRequest().permitAll();
+            a.antMatchers("/api/v1/public/**").permitAll().antMatchers("/api/**").authenticated().anyRequest()
+                    .permitAll();
         }).exceptionHandling(e -> {
             e.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
         }).oauth2Login(oauth2 -> {
@@ -54,15 +62,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             logout.logoutUrl(appConfig.getOauth2Uri() + "/logout")
                     .logoutSuccessUrl(appConfig.getOauth2Uri() + "/logout/success").clearAuthentication(true)
                     .invalidateHttpSession(true).deleteCookies("JSESSIONID").permitAll();
-        }).cors().and().csrf().ignoringAntMatchers(appConfig.getOauth2Uri() + "/logout");
+        }).cors().configurationSource(corsConfigurationSource()).and().csrf().ignoringAntMatchers(appConfig.getOauth2Uri() + "/logout");
     }
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
+
         final CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList(appConfig.getFrontEndUri()));
+        configuration.addAllowedOrigin(appConfig.getFrontEndUri());
+
+        if (Arrays.stream(environment.getActiveProfiles()).anyMatch(env -> env.equalsIgnoreCase("dev"))) {
+            LOGGER.info("add allowed origin: {}", appConfig.getFrontEndTestUri());
+            configuration.addAllowedOrigin(appConfig.getFrontEndTestUri());
+        }
+
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("GET");
+        configuration.addAllowedMethod("OPTIONS");
         configuration.setAllowCredentials(true);
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

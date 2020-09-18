@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Configuration;
 public class AppConfig {
 
     private String frontEndUri;
+    private String frontEndTestUri;
+    
     private String oauth2Uri;
     private String messagingApiAccessToken;
 
@@ -33,6 +35,14 @@ public class AppConfig {
 
     public void setMessagingApiAccessToken(String messagingApiAccessToken) {
         this.messagingApiAccessToken = messagingApiAccessToken;
+    }
+
+    public String getFrontEndTestUri() {
+        return frontEndTestUri;
+    }
+
+    public void setFrontEndTestUri(String frontEndTestUri) {
+        this.frontEndTestUri = frontEndTestUri;
     }
 
 }
