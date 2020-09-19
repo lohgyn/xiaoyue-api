@@ -19,6 +19,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -62,12 +63,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             logout.logoutUrl(appConfig.getOauth2Uri() + "/logout")
                     .logoutSuccessUrl(appConfig.getOauth2Uri() + "/logout/success").clearAuthentication(true)
                     .invalidateHttpSession(true).deleteCookies("JSESSIONID").permitAll();
-        }).cors().configurationSource(corsConfigurationSource()).and().csrf().ignoringAntMatchers(appConfig.getOauth2Uri() + "/logout");
+        }).cors().configurationSource(corsConfigurationSource()).and().csrf()
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
     }
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
-
+        
         final CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin(appConfig.getFrontEndUri());
 
@@ -77,8 +79,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         }
 
         configuration.addAllowedHeader("*");
-        configuration.addAllowedMethod("GET");
-        configuration.addAllowedMethod("OPTIONS");
+        configuration.addAllowedMethod("*");
         configuration.setAllowCredentials(true);
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
