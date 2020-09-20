@@ -64,7 +64,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .logoutSuccessUrl(appConfig.getOauth2Uri() + "/logout/success").clearAuthentication(true)
                     .invalidateHttpSession(true).deleteCookies("JSESSIONID").permitAll();
         }).cors().configurationSource(corsConfigurationSource()).and().csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).ignoringAntMatchers("/line/bot/php/webhook");
     }
 
     @Bean
