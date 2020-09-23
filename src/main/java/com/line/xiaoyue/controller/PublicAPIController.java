@@ -62,7 +62,7 @@ public class PublicAPIController {
 
         String lineBotPhpWebhookUri = "https://xiaoyue-line-bot.herokuapp.com/reply";
 
-        LOGGER.error("Received webhook event: {}", requestEntity.getBody());
+        LOGGER.info("Received webhook event: {}", requestEntity.getBody());
         try {
             RequestBodySpec requestBodySpec = WebClient.create(lineBotPhpWebhookUri).method(requestEntity.getMethod())
                     .headers(headers -> {
