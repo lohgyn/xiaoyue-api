@@ -125,26 +125,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!--<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-angular-resources</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>./src/main/resources/static/</outputDirectory>
-							<resources>
-								<resource>
-									<directory>./xiaoyue-angular/dist/xiaoyue-angular</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>-->
 		</plugins>
 	</build>
 	<profiles>

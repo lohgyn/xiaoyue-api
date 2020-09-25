@@ -1,20 +1,17 @@
 package com.line.xiaoyue.controller;
 
-import java.util.Enumeration;
-
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class GeneralErrorController implements ErrorController {
+public class GeneralErrorController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GeneralErrorController.class);
 
@@ -40,10 +37,4 @@ public class GeneralErrorController implements ErrorController {
         }
 
     }
-
-    @Override
-    public String getErrorPath() {
-        return "/error";
-    }
-
 }
