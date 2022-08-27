@@ -90,7 +90,7 @@
 			<plugin>
 				<groupId>com.github.eirslett</groupId>
 				<artifactId>frontend-maven-plugin</artifactId>
-				<version>1.10.0</version>
+				<version>1.12.1</version>
 				<configuration>
 					<installDirectory>./target</installDirectory>
 					<workingDirectory>./xiaoyue-angular</workingDirectory>
@@ -102,8 +102,8 @@
 							<goal>install-node-and-npm</goal>
 						</goals>
 						<configuration>
-							<nodeVersion>v14.10.1</nodeVersion>
-							<npmVersion>6.14.8</npmVersion>
+							<nodeVersion>v16.17.0</nodeVersion>
+							<npmVersion>8.15.0</npmVersion>
 						</configuration>
 					</execution>
 					<execution>
