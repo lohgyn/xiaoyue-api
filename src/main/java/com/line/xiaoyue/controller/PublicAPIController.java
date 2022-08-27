@@ -2,11 +2,6 @@ package com.line.xiaoyue.controller;
 
 import java.time.LocalDate;
 
-import com.line.xiaoyue.config.AppConfig;
-import com.line.xiaoyue.model.NumberOfFollower;
-import com.line.xiaoyue.service.InsightFollowersService;
-import com.line.xiaoyue.service.PublicAPIService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +12,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.RequestBodySpec;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+
+import com.line.xiaoyue.config.AppConfig;
+import com.line.xiaoyue.model.NumberOfFollower;
+import com.line.xiaoyue.service.InsightFollowersService;
+import com.line.xiaoyue.service.PublicAPIService;
 
 @RestController
 @RequestMapping("/api/v1/public")
@@ -73,18 +72,18 @@ public class PublicAPIController {
                 requestBodySpec.bodyValue(requestEntity.getBody());
             }
 
-            ClientResponse response = requestBodySpec.exchange().block();
+            ResponseEntity<String> response = requestBodySpec.retrieve().toEntity(String.class).block();
 
-            String body = response.bodyToMono(String.class).block();
+            String body = response.getBody();
 
-            if (body != null && body.length() > 0 && !body.equalsIgnoreCase("null")) {
+            if (body != null && !body.isEmpty() && !body.equalsIgnoreCase("null")) {
                 LOGGER.info("{} returned: HTTP status code {}, body {}", lineBotPhpWebhookUri,
-                        response.statusCode().value(), body);
+                        response.getStatusCode(), body);
             } else {
-                LOGGER.info("{} returned: HTTP status code {}", lineBotPhpWebhookUri, response.statusCode().value());
+                LOGGER.info("{} returned: HTTP status code {}", lineBotPhpWebhookUri, response.getStatusCode());
             }
 
-            return new ResponseEntity<>(response.statusCode());
+            return new ResponseEntity<>(response.getStatusCode());
         } catch (WebClientResponseException ex) {
             LOGGER.error("{} exception: {}", lineBotPhpWebhookUri, ex);
 
