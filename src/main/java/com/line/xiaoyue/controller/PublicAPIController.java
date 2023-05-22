@@ -2,9 +2,8 @@ package com.line.xiaoyue.controller;
 
 import java.time.LocalDate;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +20,12 @@ import com.line.xiaoyue.model.NumberOfFollower;
 import com.line.xiaoyue.service.InsightFollowersService;
 import com.line.xiaoyue.service.PublicAPIService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/public")
 public class PublicAPIController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(PublicAPIController.class);
 
     @Autowired
     private AppConfig appConfig;
@@ -39,7 +39,7 @@ public class PublicAPIController {
     @GetMapping("/line/bot/followers")
     public ResponseEntity<NumberOfFollower> getNumberOfFollowers() {
 
-        LOGGER.info("{}", appConfig.getMessagingApiAccessToken());
+        log.info("{}", appConfig.getMessagingApiAccessToken());
 
         LocalDate yesterday = LocalDate.now().minusDays(1);
 
@@ -59,33 +59,51 @@ public class PublicAPIController {
     @RequestMapping(value = "/line/bot/php/webhook", method = { RequestMethod.POST, RequestMethod.GET })
     public ResponseEntity<Void> forwardRequestToLineBotPhp(RequestEntity<String> requestEntity) {
 
+        if (requestEntity == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
         String lineBotPhpWebhookUri = "https://xiaoyue-line-bot.herokuapp.com/reply";
 
-        LOGGER.info("Received webhook event: {}", requestEntity.getBody());
-        try {
-            RequestBodySpec requestBodySpec = WebClient.create(lineBotPhpWebhookUri).method(requestEntity.getMethod())
-                    .headers(headers -> {
-                        headers = requestEntity.getHeaders();
-                    });
+        log.info("Received webhook event: {}", requestEntity.getBody());
 
-            if (requestEntity.getBody() != null && requestEntity.getBody().length() > 0) {
-                requestBodySpec.bodyValue(requestEntity.getBody());
+        try {
+
+            final HttpMethod httpMethod = requestEntity.getMethod();
+
+            if (httpMethod == null) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
+            RequestBodySpec requestBodySpec = WebClient.create(lineBotPhpWebhookUri).method(httpMethod)
+                    .headers(headers -> headers = requestEntity.getHeaders());
+
+            final String requestBody = requestEntity.getBody();
+
+            if (requestBody == null) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+
+            requestBodySpec.bodyValue(requestBody);
+
             ResponseEntity<String> response = requestBodySpec.retrieve().toEntity(String.class).block();
+
+            if (response == null) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
 
             String body = response.getBody();
 
             if (body != null && !body.isEmpty() && !body.equalsIgnoreCase("null")) {
-                LOGGER.info("{} returned: HTTP status code {}, body {}", lineBotPhpWebhookUri,
+                log.info("{} returned: HTTP status code {}, body {}", lineBotPhpWebhookUri,
                         response.getStatusCode(), body);
             } else {
-                LOGGER.info("{} returned: HTTP status code {}", lineBotPhpWebhookUri, response.getStatusCode());
+                log.info("{} returned: HTTP status code {}", lineBotPhpWebhookUri, response.getStatusCode());
             }
 
             return new ResponseEntity<>(response.getStatusCode());
         } catch (WebClientResponseException ex) {
-            LOGGER.error("{} exception: {}", lineBotPhpWebhookUri, ex);
+            log.error("{} exception: {}", lineBotPhpWebhookUri, ex);
 
             return new ResponseEntity<>(ex.getStatusCode());
         }

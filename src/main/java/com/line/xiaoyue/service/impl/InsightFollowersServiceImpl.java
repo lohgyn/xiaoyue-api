@@ -3,11 +3,12 @@ package com.line.xiaoyue.service.impl;
 
 import java.time.LocalDate;
 
-import javax.transaction.Transactional;
 
 import com.line.xiaoyue.model.NumberOfFollower;
 import com.line.xiaoyue.repository.InsightFollowersRepository;
 import com.line.xiaoyue.service.InsightFollowersService;
+
+import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

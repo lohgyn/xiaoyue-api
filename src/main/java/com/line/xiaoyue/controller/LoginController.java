@@ -2,12 +2,6 @@ package com.line.xiaoyue.controller;
 
 import java.net.URI;
 
-import javax.servlet.http.HttpServletRequest;
-
-import com.line.xiaoyue.config.AppConfig;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,12 +12,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.line.xiaoyue.config.AppConfig;
+
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/login/oauth2")
 public class LoginController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LoginController.class);
-    
     @Autowired
     private AppConfig appConfig;
 
@@ -31,7 +29,7 @@ public class LoginController {
     public ResponseEntity<Void> redirectLoginError(HttpServletRequest request)  {
 
         Exception ex = (Exception) request.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
-        LOGGER.error("Exception", ex);
+        log.error("Exception", ex);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(appConfig.getFrontEndUri())
         .queryParam("error", ex.getLocalizedMessage());
@@ -40,7 +38,7 @@ public class LoginController {
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(redirectUri);
 
-        LOGGER.info("Redirecting to {}", redirectUri);
+        log.info("Redirecting to {}", redirectUri);
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
@@ -54,7 +52,7 @@ public class LoginController {
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(redirectUri);
 
-        LOGGER.info("Redirecting to {}", redirectUri);
+        log.info("Redirecting to {}", redirectUri);
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 

@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,37 +23,35 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.line.xiaoyue.config.resolver.CustomAuthorizationRequestResolver;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Configuration
+@Slf4j
 public class WebSecurityConfig {
-
-    private final static Logger LOGGER = LoggerFactory.getLogger(WebSecurityConfig.class);
-    @Autowired
-    Environment environment;
-
-    @Autowired
-    private ClientRegistrationRepository clientRegistrationRepository;
 
     @Autowired
     private AppConfig appConfig;
 
     @Bean
-    protected SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
+    protected SecurityFilterChain filterChain(final HttpSecurity http,
+            final ClientRegistrationRepository clientRegistrationRepository,
+            final CorsConfigurationSource corsConfigurationSource) throws Exception {
 
         final Map<String, Object> additionalParameters = new LinkedHashMap<>();
         additionalParameters.put("bot_prompt", "normal");
 
         return http
-                .authorizeRequests(a -> a
-                        .antMatchers("/api/v1/public/**").permitAll()
-                        .antMatchers("/api/**")
-                        .authenticated().anyRequest().permitAll())
+                .authorizeHttpRequests(a -> a
+                        .requestMatchers("/api/v1/public/**").permitAll()
+                        .requestMatchers("/api/**").authenticated()
+                        .anyRequest().permitAll())
                 .exceptionHandling(e -> e
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .oauth2Login(oauth2 -> {
                     final String authorizationRequestBaseUri = appConfig.getOauth2Uri() + "/authorization";
                     oauth2.authorizationEndpoint()
                             .authorizationRequestResolver(new CustomAuthorizationRequestResolver(
-                                    this.clientRegistrationRepository, additionalParameters,
+                                    clientRegistrationRepository, additionalParameters,
                                     authorizationRequestBaseUri))
                             .baseUri(authorizationRequestBaseUri).and()
                             .loginPage(appConfig.getOauth2Uri())
@@ -69,22 +65,22 @@ public class WebSecurityConfig {
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID").permitAll())
                 .cors(cors -> cors
-                        .configurationSource(corsConfigurationSource()))
+                        .configurationSource(corsConfigurationSource))
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .ignoringAntMatchers("/api/v1/public/line/bot/php/webhook"))
+                        .ignoringRequestMatchers("/api/v1/public/line/bot/php/webhook"))
                 .build();
 
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
+    CorsConfigurationSource corsConfigurationSource(Environment environment) {
 
         final CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin(appConfig.getFrontEndUri());
 
         if (Arrays.stream(environment.getActiveProfiles()).anyMatch(env -> env.equalsIgnoreCase("dev"))) {
-            LOGGER.info("add allowed origin: {}", appConfig.getFrontEndTestUri());
+            log.info("add allowed origin: {}", appConfig.getFrontEndTestUri());
             configuration.addAllowedOrigin(appConfig.getFrontEndTestUri());
         }
 

@@ -2,17 +2,17 @@ package com.line.xiaoyue.config.resolver;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 public class CustomAuthorizationRequestResolver implements OAuth2AuthorizationRequestResolver {
 
-    private final String DEFAULT_AUTHORIZATION_REQUEST_BASE_URI = OAuth2AuthorizationRequestRedirectFilter.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI;
+    private static final String DEFAULT_AUTHORIZATION_REQUEST_BASE_URI = OAuth2AuthorizationRequestRedirectFilter.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI;
 
     private final OAuth2AuthorizationRequestResolver defaultAuthorizationRequestResolver;
     private final Map<String, Object> additionalParameters;
@@ -20,7 +20,8 @@ public class CustomAuthorizationRequestResolver implements OAuth2AuthorizationRe
     public CustomAuthorizationRequestResolver(final ClientRegistrationRepository clientRegistrationRepository) {
 
         this.defaultAuthorizationRequestResolver = new DefaultOAuth2AuthorizationRequestResolver(
-                clientRegistrationRepository, this.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI);
+                clientRegistrationRepository,
+                CustomAuthorizationRequestResolver.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI);
         this.additionalParameters = null;
     }
 
@@ -28,7 +29,8 @@ public class CustomAuthorizationRequestResolver implements OAuth2AuthorizationRe
             final Map<String, Object> additionalParameters) {
 
         this.defaultAuthorizationRequestResolver = new DefaultOAuth2AuthorizationRequestResolver(
-                clientRegistrationRepository, this.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI);
+                clientRegistrationRepository,
+                CustomAuthorizationRequestResolver.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI);
         this.additionalParameters = additionalParameters;
     }
 
