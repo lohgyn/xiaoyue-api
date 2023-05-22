@@ -1,13 +1,12 @@
 package com.line.xiaoyue.controller;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class AngularPathController {
 
-    @RequestMapping(method = RequestMethod.GET, path = {"/", "/home/**", "/login", "/dashboard/**", "/guide/**"})
+    @GetMapping(path = { "/", "/home/**", "/login", "/dashboard/**", "/guide/**" })
     public String forwardAngularPaths() {
         return "forward:/index.html";
     }
