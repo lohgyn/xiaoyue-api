@@ -15,7 +15,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.RequestBodySpec;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import com.line.xiaoyue.config.AppConfig;
 import com.line.xiaoyue.model.NumberOfFollower;
 import com.line.xiaoyue.service.InsightFollowersService;
 import com.line.xiaoyue.service.PublicAPIService;
@@ -28,9 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 public class PublicAPIController {
 
     @Autowired
-    private AppConfig appConfig;
-
-    @Autowired
     private InsightFollowersService insigtFollowersService;
 
     @Autowired
@@ -38,8 +34,6 @@ public class PublicAPIController {
 
     @GetMapping("/line/bot/followers")
     public ResponseEntity<NumberOfFollower> getNumberOfFollowers() {
-
-        log.info("{}", appConfig.getMessagingApiAccessToken());
 
         LocalDate yesterday = LocalDate.now().minusDays(1);
 
