@@ -27,3 +27,14 @@ mvn spring-boot:run
 ii) Once it is started, it would start listening on port 8080
 
 iii) Open any internet browser and enter url http://localhost:8080/ 
+
+## 4. Configuration Google Cloud (Application Default Credentials)
+```
+https://cloud.google.com/docs/authentication/application-default-credentials
+```
+
+## 4. Deploy to Google Cloud (App Engine)
+i) In your terminal, cd into the root folder (i.e `xiaoyue-api`), run 
+```
+mvn package appengine:deploy -Dapp.deploy.projectId=PROJECT_ID
+```

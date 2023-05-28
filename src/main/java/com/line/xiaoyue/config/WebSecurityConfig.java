@@ -49,11 +49,12 @@ public class WebSecurityConfig {
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .oauth2Login(oauth2 -> {
                     final String authorizationRequestBaseUri = appConfig.getOauth2Uri() + "/authorization";
-                    oauth2.authorizationEndpoint()
-                            .authorizationRequestResolver(new CustomAuthorizationRequestResolver(
-                                    clientRegistrationRepository, additionalParameters,
-                                    authorizationRequestBaseUri))
-                            .baseUri(authorizationRequestBaseUri).and()
+                    oauth2.authorizationEndpoint(config -> {
+                        config.authorizationRequestResolver(new CustomAuthorizationRequestResolver(
+                                clientRegistrationRepository, additionalParameters,
+                                authorizationRequestBaseUri))
+                                .baseUri(authorizationRequestBaseUri);
+                    })
                             .loginPage(appConfig.getOauth2Uri())
                             .loginProcessingUrl(appConfig.getOauth2Uri() + "/code/*")
                             .failureUrl(appConfig.getOauth2Uri() + "/fail").permitAll();
