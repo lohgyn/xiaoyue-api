@@ -18,7 +18,12 @@ jobs:
   build:
 
     runs-on: windows-latest
-
+    
+    # Add "id-token" with the intended permissions.
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+      
     steps:
     - uses: actions/checkout@v3
       with:
@@ -29,6 +34,12 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+    - id: 'auth'
+      name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v1'
+      with:
+        workload_identity_provider: 'projects/849183775880/locations/global/workloadIdentityPools/github-workload-pool/providers/github-provider'
+        service_account: 'firebase-adminsdk-6xsao@fiery-emblem-233712.iam.gserviceaccount.com'
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
