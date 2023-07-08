@@ -1,5 +1,10 @@
 runtime: java17
 
+handlers:
+- url: /.*
+  script: auto
+  secure: always
+
 env_variables:
   SPRING_PROFILES_ACTIVE: "prod"
 
